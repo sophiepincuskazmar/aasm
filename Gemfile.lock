@@ -1,0 +1,37 @@
+GIT
+  remote: https://github.com/pcantrell/aasm
+  revision: b29037b7b74531374b0fddc2c54e642b84e3e202
+  branch: uninitialized-ivar-warning-fix
+  specs:
+    aasm (4.12.3)
+      concurrent-ruby (~> 1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ansi (1.5.0)
+    builder (3.2.3)
+    concurrent-ruby (1.0.5)
+    minitest (5.11.3)
+    minitest-reporters (1.1.19)
+      ansi
+      builder
+      minitest (>= 5.0)
+      ruby-progressbar
+    rake (12.3.0)
+    ruby-progressbar (1.9.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  aasm!
+  minitest
+  minitest-reporters
+  rake
+
+RUBY VERSION
+   ruby 2.6.4p104
+
+BUNDLED WITH
+   1.17.2
