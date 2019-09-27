@@ -7,7 +7,7 @@ class RetailTransaction
     @items = []
   end
 
-  attr_reader :payment_info, :payment_token
+  attr_reader :payment_info
 
   def items
     @items.dup  # prevent caller from modifying our items
@@ -29,10 +29,6 @@ class RetailTransaction
 
   def empty?
     @items.empty?
-  end
-
-  def paid?
-    !payment_token.nil?
   end
 
   aasm do
