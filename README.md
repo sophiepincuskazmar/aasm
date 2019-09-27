@@ -1,8 +1,14 @@
-# State Machine Exercise
+# State Machine Activity
+
+Goals of this activity:
+
+- Get more familiar with the style and flavor of Ruby code as it exists in the wild.
+- Learn about an embedded domain-specific language (eDSL).
+- Give you a tiny but semi-realistic project environment where you can play with Ruby code on your own.
 
 ## Getting oriented and set up
 
-This project depends on several third-party libraries, which Ruby calls “[gems](https://rubygems.org).” Like most Ruby projects, this project uses [Bundler](http://bundler.io) to manage its gem dependencies and their versions. Together, Gems and Bundler are a “package manager.” (You may be familiar with other package managers: pip in Python and npm in Javascript. Both of those are based on RubyGems and Bundler.)
+This project depends on several third-party libraries, which Ruby calls “[gems](https://rubygems.org).” Like most Ruby projects, this project uses [Bundler](http://bundler.io) to manage its gem dependencies and their versions. Together, Gems and Bundler are a “package manager.” (You may be familiar with other package managers: pip in Python and npm in Javascript. Both of those were at least partly inspired by RubyGems and Bundler.)
 
 Take a look at `Gemfile`. It specifies which gems this project depends on, where to install them from, and optionally constraints on which version of the gem to use. (Note that `Gemfile` is itself Ruby code!)
 
@@ -36,11 +42,45 @@ If you see that, you’re up and running.
 
 This problem asks you to do a lot of code reading, and a little code writing.
 
+### The model
+
 In `lib/retail_transaction.rb`, you will find a rudimentary model of a sale on a point of sale system (or “cash register” as we normal humans call it). This class uses a gem called [Acts As State Machine](https://github.com/aasm/aasm) (“AASM” for short) to model the different states a transaction can be in:
 
 ![Retail transaction states](doc/images/retail-transaction-states.svg)
 
 Note how the `aasm` section in the code looks as if Ruby has some kind of built-in handling for states and events and transition rules. It doesn’t. The aasm gem added that.
+
+### The console
+
+From a command line in the project directory, run:
+
+```bash
+bundle exec rake console
+```
+
+This gives you `irb`, a Ruby REPL (“read-execute-print loop”) that you can use to interactively try Ruby code one line at a time. One of the advantages of an interpreted language is that REPLs are relatively easy for the language to provide!
+
+This particular REPL has loaded the `RetailTransaction` code for you, and created an object called `tx` you can play with. Try the follow:
+
+```ruby
+tx.add_item "noodles"
+tx.ringing_up?
+tx.paid?
+tx.aasm.current_state
+
+tx.check_out!
+tx.aasm.current_state
+tx.process_payment!  # Fails because we haven't provided payment
+tx.payment_info = "some credit card"
+tx.process_payment!
+tx.payment_info = "other credit card"  # Fails because paymment processing already started
+tx.payment_authorized!
+tx.aasm.current_state
+```
+
+Type `exit` to leave the Ruby REPL. You can run it again and try some different state transitions.
+
+### The tests
 
 Now take a look at `test/retail_transation_test.rb`. These tests describe all the expected behavior of a retail transaction in its various states. Things to note:
 
@@ -54,6 +94,12 @@ Now take a look at `test/retail_transation_test.rb`. These tests describe all th
 
 Note that these tests use methods that `RetailTransaction` does not actually declare. AASM generates them using metaprogramming. Some test whether the object is in a particular state, e.g.`ringing_up?`. Some trigger a state transition event, e.g. `payment_authorized!`. There are many others the tests do not use, such as ones that test whether a given state transition is allowed, e.g. `may_refund?`.
 
+To run these tests at the command line:
+
+```bash
+bundle exec rake test
+```
+
 
 ## Your task
 
@@ -61,7 +107,10 @@ Your task is to add and test a new `refunded` state and `refund` event, so that 
 
 ![Retail transaction states after you've done your work](doc/images/retail-transaction-states-after.svg)
 
-Adding the new state and new event will be easy; adding tests will be a little more tricky. Some hints:
+
+## Challenge task
+
+If you are looking for an additional challenge, try adding tests for your new state. Some hints:
 
 - Add a new test that ensures a settled order can be refunded.
 - Add tests to one or two other states that ensure they _cannot_ be refunded. (You don't need to add that to _every_ other state. Unit testing is all about picking good examples, not about explicitly making every possible scenario happen. Which states might another programmer carelessly assume would allow refunding? Test those.)
